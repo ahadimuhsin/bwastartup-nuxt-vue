@@ -10,21 +10,21 @@
       <li>
         <nuxt-link
           class="text-white hover:text-teal-500 text-lg px-4 py-3"
-          to="/projects.html"
+          to="/projects"
           >Project</nuxt-link
         >
       </li>
       <li>
         <nuxt-link
           class="text-white hover:text-teal-500 text-lg px-4 py-3"
-          to="/features.html"
+          to="/features"
           >Features</nuxt-link
         >
       </li>
       <li>
         <nuxt-link
           class="text-white hover:text-teal-500 text-lg px-4 py-3"
-          to="/story.html"
+          to="/story"
           >Success Stories</nuxt-link
         >
       </li>
