@@ -56,13 +56,13 @@ export default {
     strategies: {
       local: {
         token: {
-          property: 'token',
+          property: 'data.token',
           global: true,
           // required: true,
           // type: 'Bearer'
         },
         user: {
-          property: 'user',
+          property: false,
           // autoFetch: true
         },
         endpoints: {
@@ -73,7 +73,7 @@ export default {
           },
           logout: false,
           user: {
-            url: '/api/users/fetch',
+            url: '/api/v1/users/fetch',
             method: 'get',
             propertyName: 'data'
            }
