@@ -8,8 +8,10 @@
     <section class="container mx-auto pt-8">
       <DashboardHeader></DashboardHeader>
       <hr />
-      <div class="block mb-2">
-        <div class="w-full lg:max-w-full lg:flex mb-4" v-for="i in 6" :key="i">
+      <!-- {{ transactions.data.data.length }} -->
+      <div class="block mb-2" v-if="transactions.data.data.length > 0">
+        <div class="w-full lg:max-w-full lg:flex mb-4"  v-for="transaction in transactions.data.data"
+        :key="transaction.id">
           <div
             class="
               h-48
@@ -21,7 +23,7 @@
               text-center
               overflow-hidden
             "
-            style="background-color: #bbb"
+            :style="'background-color: #bbb; background-position; center; background-image:url(\'' + $axios.defaults.baseURL + '/' + transaction.campaign.image_url + '\')'"
           ></div>
           <div
             class="
@@ -39,14 +41,19 @@
           >
             <div>
               <div class="text-gray-900 font-bold text-xl mb-1">
-                Cari Uang Buat Gunpla
+                {{ transaction.campaign.name }}
               </div>
               <p class="text-sm text-gray-600 flex items-center mb-2">
-                Rp. 200.000.000 &middot; 12 September 2020
+                Rp. {{ transaction.amount.toLocaleString('id-ID') }}
+                &middot; {{ dateFormat(transaction.created_at) }}
+                &middot; {{ transaction.status }}
               </p>
             </div>
           </div>
         </div>
+      </div>
+      <div class="block mb-2" v-else>
+      Transaksi Kosong
       </div>
     </section>
     <div class="cta-clip -mt-20"></div>
@@ -54,3 +61,24 @@
     <Footer></Footer>
   </div>
 </template>
+
+
+<script>
+import moment from 'moment'
+export default {
+  middleware: 'auth',
+  async asyncData({$axios, app}){
+    // console.log(app.$auth.state.user.data.id)
+    const transactions = await $axios.get('/api/v1/transactions')
+    return {transactions}
+  },
+
+  methods:{
+    dateFormat(value){
+      if (value) {
+           return moment(String(value)).format('DD MMMM Y')
+          }
+    }
+  }
+}
+</script>

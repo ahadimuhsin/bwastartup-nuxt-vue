@@ -17,7 +17,10 @@
           </div>
           <div class="w-1/4 text-right">
             <nuxt-link
-              to="/dashboard/projects/create"
+              :to="{
+                name: 'dashboard-projects-id-edit',
+                params: {id: campaign.data.id}
+                }"
               class="bg-green-button hover:bg-green-button text-white font-bold px-4 py-1 rounded inline-flex items-center"
             >
               Edit
@@ -31,39 +34,34 @@
             >
               <div>
                 <div class="text-gray-900 font-bold text-xl mb-2">
-                  Cari Uang Buat Gunpla
+                  {{ campaign.data.name }}
                 </div>
+                <p class="text-sm font-bold flex items-center mb-1">
+                  Short Description
+                </p>
+                <p class="text-gray-700 text-base">
+                  {{ campaign.data.short_description }}
+                </p>
                 <p class="text-sm font-bold flex items-center mb-1">
                   Description
                 </p>
                 <p class="text-gray-700 text-base">
-                  Designed to fit your dedicated typing experience. No matter
-                  what you like, linear, clicky or a little in between, we’ve
-                  got you covered with three Gateron switches options (Blue,
-                  Brown, Red). With a lifespan of 50 million keystroke lifespan
-                  we want to make sure that you experience same feedback for
-                  every keystroke.
-                </p>
-                <p class="text-gray-700 text-base">
-                  With N-key rollover (NKRO on wired mode only) you can register
-                  as many keys as you can press at once without missing out
-                  characters. It allows to use all the same media keys as
-                  conventional macOS.
+                  {{ campaign.data.description }}
                 </p>
                 <p class="text-sm font-bold flex items-center mb-1 mt-4">
                   What Will Funders Get
                 </p>
                 <ul class="list-disc ml-5">
-                  <li>Equity of the startup directly from the founder</li>
-                  <li>Special service or product that startup has</li>
-                  <li>
-                    You can also sell your equity once the startup going IPO
+                  <li v-for="perk in campaign.data.perks" :key="perk">
+                  {{ perk }}
                   </li>
                 </ul>
                 <p class="text-sm font-bold flex items-center mb-1 mt-4">
                   Price
                 </p>
-                <p class="text-4xl text-gray-700 text-base">200.000</p>
+                <p class="text-4xl text-gray-700 text-base">
+                Rp {{ campaign.data.goal_amount.toLocaleString('id-ID')}}
+                </p>
               </div>
             </div>
           </div>
@@ -118,18 +116,32 @@
             </h3>
           </div>
         </div>
-        <div class="block mb-2">
+        <div class="block mb-2" v-if="transactions_history.data.length >0">
+          <div class="w-full lg:max-w-full lg:flex mb-4" v-for="transaction in transactions_history.data" :key="transaction.id">
+            <div
+              class="w-full border border-gray-400 lg:border-gray-400 bg-white rounded p-8 flex flex-col justify-between leading-normal"
+            >
+              <div>
+                <div class="text-gray-900 font-bold text-xl mb-1">
+                  {{ transaction.name }}
+                </div>
+                <p class="text-sm text-gray-600 flex items-center mb-2">
+                  Rp. {{ transaction.amount.toLocaleString('id-ID') }} &middot; {{ dateFormat(transaction.created_at) }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="block mb-2" v-else>
           <div class="w-full lg:max-w-full lg:flex mb-4">
             <div
               class="w-full border border-gray-400 lg:border-gray-400 bg-white rounded p-8 flex flex-col justify-between leading-normal"
             >
               <div>
                 <div class="text-gray-900 font-bold text-xl mb-1">
-                  Galih Pratama
+                   Belum Ada Transaksi
                 </div>
-                <p class="text-sm text-gray-600 flex items-center mb-2">
-                  Rp. 200.000 &middot; 12 September 2020
-                </p>
+
               </div>
             </div>
           </div>
@@ -140,3 +152,25 @@
       <Footer></Footer>
     </div>
 </template>
+
+<script>
+import moment from 'moment'
+export default {
+  middleware: 'auth',
+  async asyncData({$axios, params}) {
+    const campaign = await $axios.$get('/api/v1/campaign/' + params.id)
+    const transactions_history = await $axios.$get('/api/v1/campaigns/'+params.id+'/transactions')
+
+    return {campaign, transactions_history}
+  },
+
+  methods:{
+    dateFormat(value){
+      if (value) {
+           return moment(String(value)).format('DD MMMM Y')
+          }
+    }
+  }
+}
+</script>
+
