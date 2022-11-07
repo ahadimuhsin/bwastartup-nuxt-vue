@@ -115,7 +115,7 @@
 </template>
 
 <script>
-import {Money} from 'v-money'
+import {Money} from 'v-money';
 export default {
   middleware: 'auth',
   components: {Money},
